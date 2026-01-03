@@ -16,7 +16,7 @@
 
 ---
 
-## Version 1.1.0 (Planned - Q1 2026)
+## Version 1.1.0 (Planned - first half of Q1 2026)
 
 ### Features
 - [ ] Support for up to 6 characters (currently 4 max)
@@ -34,7 +34,7 @@
 
 ---
 
-## Version 1.2.0 (Planned - Q2 2026)
+## Version 1.2.0 (Planned -  second half of Q1 2026)
 
 ### Features
 - [ ] **Personal Website** - Host your own vanity address service
@@ -60,7 +60,7 @@
 
 ---
 
-## Version 2.0.0 (Planned - Q3 2026)
+## Version 2.0.0 (Planned - Q2 2026)
 
 ### Features
 - [ ] **Custom Vanity Token Address Deployment on PumpFun**
