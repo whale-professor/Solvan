@@ -20,7 +20,7 @@ RUN pip3 install --no-cache-dir --break-system-packages -r requirements.txt
 
 # Copy application files
 COPY vanity_generator.py ./
-COPY vanity-bot.js ./
+COPY bot.js ./
 
 # Create data directory for stats
 RUN mkdir -p /app/data
@@ -30,4 +30,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD node -e "console.log('healthy')" || exit 1
 
 # Run the bot
-CMD ["node", "vanity-bot.js"]
+CMD ["node", "bot.js"]
