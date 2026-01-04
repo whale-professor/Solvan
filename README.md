@@ -26,25 +26,38 @@ cd Solvan
 ```
 
 2. Create `.env` file:
-```env
-TELEGRAM_BOT_TOKEN=your_bot_token_here
-REDIS_HOST=redis
-REDIS_PORT=6379
+```bash
+cp .env.example .env
+# Edit .env and add your TELEGRAM_BOT_TOKEN
+nano .env
 ```
 
-3. Deploy:
+3. Build the Docker images:
+```bash
+docker-compose build
+```
+
+4. Start the services:
 ```bash
 docker-compose up -d
 ```
 
-4. Check logs:
+5. Check logs to verify it's running:
 ```bash
 docker logs -f solana-vanity-bot
 ```
 
+You should see:
+```
+✅ Bot token loaded
+✅ Redis connected
+✅ Bot is POLLING - waiting for messages...
+✅ /info and /stats commands should now work!
+```
+
 ## Usage
 
-Start the bot on Telegram:
+Start the bot on Telegram (find your bot by searching for it or via the link from [@BotFather](https://t.me/botfather)):
 
 ```
 /start   - Welcome & stats
@@ -88,11 +101,12 @@ Start the bot on Telegram:
 ├── vanity_generator.py        # Python vanity address generator
 ├── docker-compose.yml         # Docker orchestration
 ├── Dockerfile                 # Bot container
-├── .env                       # Environment variables (create this)
+├── .env.example              # Environment template (copy to .env)
 ├── package.json              # Node dependencies
 ├── README.md                 # This file
 ├── ROADMAP.md               # Future features & plans
-└── LICENSE                  # MIT license
+├── LICENSE                  # MIT license
+└── .gitignore              # Git ignore rules
 ```
 
 ## Configuration
@@ -101,9 +115,15 @@ Start the bot on Telegram:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `TELEGRAM_BOT_TOKEN` | Your Telegram bot token | Required |
+| `TELEGRAM_BOT_TOKEN` | Your Telegram bot token (from @BotFather) | Required |
 | `REDIS_HOST` | Redis server hostname | `redis` |
 | `REDIS_PORT` | Redis server port | `6379` |
+
+Get your bot token:
+1. Message [@BotFather](https://t.me/botfather) on Telegram
+2. Use `/newbot` command
+3. Follow the instructions
+4. Copy your token to `.env` file
 
 ## Performance
 
@@ -135,34 +155,46 @@ Check out our [ROADMAP.md](ROADMAP.md) for planned features:
 ### Bot not responding to commands
 
 ```bash
-# Check bot is running
-docker ps | grep solana-vanity-bot
+# 1. Check if containers are running
+docker ps
 
-# View logs
+# 2. View logs for errors
 docker logs solana-vanity-bot
 
-# Restart bot
-docker restart solana-vanity-bot
+# 3. Verify bot token in .env
+grep TELEGRAM_BOT_TOKEN .env
+
+# 4. Restart the bot
+docker-compose restart solana-vanity-bot
 ```
 
-### Redis connection issues
+### Redis connection errors
 
 ```bash
-# Check Redis is running
-docker ps | grep redis
-
-# View Redis logs
+# Check Redis status
 docker logs redis
 
-# Test Redis connection
+# Verify Redis is running
 docker exec redis redis-cli ping
+
+# Restart Redis
+docker-compose restart redis
 ```
 
 ### Generation timeouts
 
-- Increase `maxWaitMs` in `handleGeneration` function
-- Check CPU/memory availability
-- Reduce other concurrent workloads
+- Increase timeout in `vanity-bot.js` (~line 155)
+- Check system CPU/memory: `docker stats`
+- Reduce concurrent workers
+
+### Build issues
+
+```bash
+# Clean rebuild
+docker-compose down
+docker-compose build --no-cache
+docker-compose up -d
+```
 
 ## Development
 
@@ -178,7 +210,10 @@ pip install solders
 # Start Redis locally
 redis-server
 
-# Run bot (set TELEGRAM_BOT_TOKEN first)
+# Set environment variable
+export TELEGRAM_BOT_TOKEN=your_token_here
+
+# Run bot
 node vanity-bot.js
 ```
 
@@ -186,7 +221,12 @@ node vanity-bot.js
 
 Enable verbose logging:
 ```bash
-docker logs -f solana-vanity-bot | grep -i "info\|error\|job"
+docker logs -f solana-vanity-bot | grep -i "info\|error\|job\|user"
+```
+
+Monitor Redis:
+```bash
+docker exec -it redis redis-cli MONITOR
 ```
 
 ## Support & Contact
